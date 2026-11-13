@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ANIMASI STUDIO.id – video animasi dari prompt</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#eef1f6;--card:#fff;--ink:#14213d;--mut:#5b6784;--line:#d5dbe8;--acc:#ff4d2e;--acc2:#14213d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141f;--card:#192033;--ink:#eef1f8;--mut:#99a5c2;--line:#2a3452;--acc:#ff6a4d;--acc2:#eef1f8}}
+:root[data-theme="dark"]{--bg:#10141f;--card:#192033;--ink:#eef1f8;--mut:#99a5c2;--line:#2a3452;--acc:#ff6a4d;--acc2:#eef1f8}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+header{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:16px 24px;flex-wrap:wrap}
+h1{font-size:22px;margin:0;font-weight:800;letter-spacing:-.02em}
+main{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px;padding:0 24px 24px;max-width:1400px;margin:auto}
+@media(max-width:900px){main{grid-template-columns:1fr;padding:0 14px 20px}header{padding:14px}}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+h2{font-size:16px;margin:0 0 10px;font-weight:800}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+input[type=color]{padding:2px;height:38px;cursor:pointer}input[type=range]{padding:0}
+textarea{resize:vertical;min-height:64px}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.stage{background:#000;border-radius:10px;display:flex;justify-content:center;align-items:center;overflow:hidden;min-height:260px}
+.stage canvas{max-width:100%;max-height:420px}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:110px}
+.pal{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.btn{position:relative;overflow:hidden;border:0;border-radius:10px;padding:10px 16px;font:600 14px inherit;font-family:inherit;cursor:pointer;background:var(--acc2);color:var(--bg);transition:transform .18s,box-shadow .18s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(20,33,61,.25)}
+.btn:active{transform:translateY(0) scale(.96)}
+.btn::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.55) 0%,transparent 60%) center/0 0 no-repeat;transition:background-size .45s}
+.btn:active::after{background-size:300% 300%;transition:0s}
+.btn.hot{background:linear-gradient(110deg,var(--acc) 40%,#ffb86b 50%,var(--acc) 60%) 0 0/250% 100%;color:#fff;animation:sheen 2.6s linear infinite}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+@keyframes sheen{to{background-position:-250% 0}}
+.bar{height:8px;background:var(--bg);border-radius:6px;overflow:hidden;margin-top:10px}.bar i{display:block;height:100%;width:0;background:var(--acc)}
+.gal{grid-column:1/-1}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tools input{max-width:260px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.tc{background:var(--bg);border:2px solid transparent;border-radius:12px;padding:6px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:transform .25s,box-shadow .25s,border-color .25s}
+.tc:hover{transform:translateY(-6px) rotate(-.6deg);box-shadow:0 14px 26px rgba(20,33,61,.22);border-color:var(--acc)}
+.tc[aria-pressed=true]{border-color:var(--acc)}
+.tc canvas{width:100%;border-radius:8px;display:block;aspect-ratio:16/9}
+.tc b{display:block;font-size:13px;margin-top:6px}.tc span{font-size:12px;color:var(--mut)}
+.note{font-size:12px;color:var(--mut)}
+@media(prefers-reduced-motion:reduce){.btn.hot{animation:none}.tc:hover{transform:none}}
+</style>
+</head>
+<body>
+<header>
+<h1>ANIMASI STUDIO.id</h1>
+<div class="row" style="flex:0 1 auto"><button class="btn ghost" id="theme">Mode gelap/terang</button><button class="btn hot" id="newp">Project baru</button></div>
+</header>
+<main>
+<section>
+<h2>Pratinjau</h2>
+<div class="stage"><canvas id="cv" width="640" height="360"></canvas></div>
+<label for="prompt">Prompt animasi</label>
+<textarea id="prompt" placeholder="Contoh: gelombang laut biru tenang untuk latar video travel"></textarea>
+<div class="row" style="margin-top:8px"><button class="btn" id="gen">Buat dari prompt</button><button class="btn ghost" id="play">Jeda</button></div>
+<h2 style="margin-top:18px">Render &amp; unduh</h2>
+<div class="row">
+<div><label for="ori">Orientasi</label><select id="ori"><option value="16:9">Landscape 16:9</option><option value="9:16">Portrait 9:16</option><option value="1:1">Persegi 1:1</option><option value="4:5">Portrait 4:5</option></select></div>
+<div><label for="res">Resolusi</label><select id="res"><option value="720">HD 720p</option><option value="1080" selected>Full HD 1080p</option><option value="2160">4K 2160p</option></select></div>
+<div><label for="fmt">Format</label><select id="fmt"><option value="webm">WebM</option><option value="mp4">MP4</option></select></div>
+<div><label for="dur">Durasi</label><select id="dur"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div>
+</div>
+<div style="margin-top:12px"><button class="btn hot" id="render">Render video</button></div>
+<div class="bar"><i id="prog"></i></div>
+<p class="note" id="rnote">Render berjalan real-time di browser, jadi tab harus tetap terbuka. MP4 hanya tersedia jika browser mendukung; jika tidak, otomatis jadi WebM.</p>
+</section>
+<section>
+<h2>Isi video</h2>
+<label for="txt">Judul di video</label><input id="txt" maxlength="60">
+<label for="sub">Teks kecil</label><input id="sub" maxlength="80">
+<label for="spd">Kecepatan animasi</label><input id="spd" type="range" min="0.3" max="2.5" step="0.1" value="1">
+<label>Palet warna (latar, 4 warna aksen)</label>
+<div class="pal"><input type="color" id="c0" aria-label="Warna latar"><input type="color" id="c1" aria-label="Warna 1"><input type="color" id="c2" aria-label="Warna 2"><input type="color" id="c3" aria-label="Warna 3"><input type="color" id="c4" aria-label="Warna 4"></div>
+<label for="pre">Preset palet</label><select id="pre"></select>
+<h2 style="margin-top:18px">Metadata Shutterstock</h2>
+<p class="note">Otomatis mengikuti prompt, template, teks, dan palet.</p>
+<label for="mt">Judul</label><input id="mt">
+<label for="md">Deskripsi</label><textarea id="md"></textarea>
+<label for="mk">Kata kunci (<span id="kc">0</span>/50)</label><textarea id="mk"></textarea>
+<div class="row" style="margin-top:8px"><button class="btn" id="cp">Salin metadata</button><button class="btn ghost" id="csv">Unduh CSV</button></div>
+</section>
+<section class="gal">
+<h2>100 template siap pakai</h2>
+<div class="tools"><input id="q" placeholder="Cari template…" aria-label="Cari template"><select id="fs" style="max-width:200px" aria-label="Filter gaya"></select></div>
+<div class="grid" id="grid"></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const PAL=[["Senja","sunset,warm,orange,pink",["#1d1135","#ff5d73","#ffb86b","#ffe29a","#7b5cff"]],["Laut","ocean,blue,sea,calm",["#06283d","#1363df","#47b5ff","#dff6ff","#256d85"]],["Neon","neon,cyberpunk,glow,night",["#0b0c1e","#00f5d4","#f15bb5","#fee440","#9b5de5"]],["Hutan","forest,green,nature,fresh",["#0f2a1d","#2d6a4f","#74c69d","#d8f3dc","#95d5b2"]],["Permen","pastel,soft,candy,cute",["#fdf0f5","#ffb3c6","#bde0fe","#cdb4db","#a2d2ff"]],["Api","fire,red,hot,energy",["#1a0505","#d00000","#ff6d00","#ffba08","#9d0208"]],["Mint","mint,clean,minimal,fresh",["#eefaf6","#2ec4b6","#ff9f1c","#011627","#e71d36"]],["Ungu","purple,violet,royal,vibrant",["#190b35","#7209b7","#b5179e","#f72585","#4cc9f0"]],["Emas","gold,luxury,elegant,premium",["#14110f","#c9a227","#f4e285","#8a6d1d","#f5ebe0"]],["Salju","ice,winter,cool,white",["#e9f1fa","#4a6fa5","#8fb8de","#274060","#c0d6e8"]]];
+const STY=[["Orbit","orbit,circles,planet","orbit|planet|lingkaran"],["Bar Musik","equalizer,bars,audio","bar|musik|equalizer"],["Gelembung","bubbles,floating,water","gelembung|bubble"],["Kotak Berputar","rotating squares,geometric,tunnel","kotak|square|geometri"],["Ombak","waves,fluid,flow","gelombang|wave|ombak"],["Denyut Grid","grid,dots,pulse","grid|titik|dot"],["Segitiga Naik","triangles,rising,polygon","segitiga|triangle|naik"],["Riak","ripple,rings,sonar","riak|ripple|cincin|ring"],["Zigzag","zigzag,lines,stripes","zigzag|garis|line"],["Konfeti","confetti,celebration,party","konfeti|confetti|pesta|party"]];
+const PK=["senja|sunset|hangat","laut|ocean|biru|blue","neon|cyber","hutan|forest|hijau|green","pastel|permen|lucu","api|fire|merah|red","mint|bersih|clean","ungu|purple","emas|gold|mewah|luxury","salju|ice|dingin|winter"];
+const lum=h=>{const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255};
+function draw(g,w,h,t,S){
+const c=S.colors,u=Math.min(w,h),sp=S.speed,v=S.variant,T=t*sp,P=Math.PI*2;
+g.fillStyle=c[0];g.fillRect(0,0,w,h);
+const col=i=>c[1+i%4];
+switch(S.style){
+case 0:{const n=6+v;for(let i=0;i<n;i++){const a=T*(.4+i*.1)+i,r=u*(.1+i*.045);g.fillStyle=col(i);g.globalAlpha=.85;g.beginPath();g.arc(w/2+Math.cos(a)*r*1.5,h/2+Math.sin(a)*r,u*(.02+i*.004),0,P);g.fill()}break}
+case 1:{const n=12+v*3,bw=w/n;for(let i=0;i<n;i++){const bh=h*(.15+.5*Math.abs(Math.sin(T*2+i*.5)));g.fillStyle=col(i);g.fillRect(i*bw+bw*.15,h-bh,bw*.7,bh)}break}
+case 2:{const n=14+v*2;for(let i=0;i<n;i++){const x=((i*.37+.1)%1)*w+Math.sin(T+i)*u*.03,y=h-((T*.1+i*.173)%1)*h*1.2+u*.05;g.globalAlpha=.7;g.fillStyle=col(i);g.beginPath();g.arc(x,y,u*(.02+(i%5)*.012),0,P);g.fill()}break}
+case 3:{const n=5+v%4;g.lineWidth=u*.012;for(let i=0;i<n;i++){const s=u*(.45-i*.06);g.save();g.translate(w/2,h/2);g.rotate(T*(i%2?.5:-.5)*(1+i*.15));g.strokeStyle=col(i);g.strokeRect(-s,-s,s*2,s*2);g.restore()}break}
+case 4:{for(let l=0;l<4;l++){g.fillStyle=c[1+l];g.globalAlpha=.8;g.beginPath();g.moveTo(0,h);for(let x=0;x<=w;x+=w/40)g.lineTo(x,h*(.45+l*.12)+Math.sin(x/w*(4+v*.4)+T*(1+l*.3)+l)*u*.06);g.lineTo(w,h);g.fill()}break}
+case 5:{const n=6+v,s=w/n,rows=Math.ceil(h/s);for(let i=0;i<n;i++)for(let j=0;j<rows;j++){g.fillStyle=col(i+j);g.beginPath();g.arc(i*s+s/2,j*s+s/2,s*.4*Math.abs(Math.sin(T*2+(i+j)*.6)),0,P);g.fill()}break}
+case 6:{const n=10+v;for(let i=0;i<n;i++){const s=u*(.04+(i%4)*.02),x=((i*.31+.07)%1)*w,y=h+s-((T*.12+i*.19)%1)*(h+s*2);g.save();g.translate(x,y);g.rotate(T*.5+i);g.fillStyle=col(i);g.globalAlpha=.85;g.beginPath();g.moveTo(0,-s);g.lineTo(s,s);g.lineTo(-s,s);g.fill();g.restore()}break}
+case 7:{const n=6;g.lineWidth=u*.012;for(let i=0;i<n;i++){const p=(T*.2+i/n)%1;g.globalAlpha=1-p;g.strokeStyle=col(i+v);g.beginPath();g.arc(w/2,h/2,p*u*.8,0,P);g.stroke()}break}
+case 8:{const n=8;g.lineWidth=u*.015;g.lineJoin="round";for(let i=0;i<n;i++){g.strokeStyle=col(i);g.beginPath();for(let k=0;k<=24+v;k++){const x=k/(24+v)*w,y=h*(i+.5)/n+(k%2?1:-1)*u*.03*Math.sin(T*2+i);k?g.lineTo(x,y):g.moveTo(x,y)}g.stroke()}break}
+default:{const n=40+v*5;for(let i=0;i<n;i++){const x=((i*.618)%1)*w+Math.sin(T+i)*u*.02,y=((T*.12+i*.137)%1)*(h+40)-20;g.save();g.translate(x,y);g.rotate(T*2+i);g.fillStyle=col(i);g.fillRect(-u*.01,-u*.02,u*.02,u*.04);g.restore()}}}
+g.globalAlpha=1;
+if(S.text||S.sub){const tc=lum(c[0])>.55?"#14213d":"#ffffff",a=Math.min(1,t/.8),e=1-Math.pow(1-a,3);g.fillStyle=tc;g.globalAlpha=e;g.textAlign="center";g.textBaseline="middle";
+let fs=u*.08;g.font=`800 ${fs}px "Bricolage Grotesque",system-ui,sans-serif`;const m=g.measureText(S.text).width;if(m>w*.88){fs*=w*.88/m;g.font=`800 ${fs}px "Bricolage Grotesque",system-ui,sans-serif`}
+const y=h/2+(1-e)*u*.05;g.save();g.globalAlpha=e*.9;g.fillStyle=lum(c[0])>.55?"rgba(255,255,255,.6)":"rgba(0,0,0,.4)";g.fillRect(0,y-fs*.8,w,fs*(S.sub?2.2:1.6));g.restore();g.fillStyle=tc;g.fillText(S.text,w/2,y);g.font=`400 ${u*.035}px "Bricolage Grotesque",system-ui,sans-serif`;g.globalAlpha=e*.85;g.fillText(S.sub,w/2,y+fs*.9);g.globalAlpha=1}}
+const S={style:4,variant:1,colors:[...PAL[1][2]],text:"Ombak Tenang",sub:"Latar animasi simpel",speed:1,prompt:"",tpl:14,pal:1};
+const cv=$("cv"),cx=cv.getContext("2d");let playing=true,clock=0,last=performance.now();
+function resize(){const[a,b]=$("ori").value.split(":").map(Number);const W=640;cv.width=a>=b?W:Math.round(W*a/b*(a/b<1?1:1));cv.height=Math.round(cv.width*b/a)}
+function frame(n){const d=(n-last)/1000;last=n;if(playing)clock+=d;draw(cx,cv.width,cv.height,clock,S);requestAnimationFrame(frame)}
+function sync(){$("txt").value=S.text;$("sub").value=S.sub;$("spd").value=S.speed;S.colors.forEach((x,i)=>$("c"+i).value=x);$("pre").value=S.pal;meta()}
+function meta(){const st=STY[S.style],pl=PAL[S.pal];const words=(S.prompt+" "+S.text).toLowerCase().replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(w=>w.length>3);
+const kw=[...new Set([...words,...st[1].split(","),...pl[1].split(","),"animation","motion graphics","abstract","background","loop","seamless","video","simple","dynamic","modern","digital","design","colorful","4k","hd","creative","graphic","template","backdrop","footage","intro","presentation","website","social media","vertical","horizontal"])].slice(0,50);
+$("mt").value=`${st[0]} animated background, ${pl[0].toLowerCase()} color motion graphics loop`;
+$("md").value=`Simple dynamic ${st[1].split(",")[0]} animation in ${pl[1].split(",")[0]} colors. Smooth abstract motion graphics background${S.text?` with the title “${S.text}”`:""}, suitable for intros, presentations, social media and websites.`;
+$("mk").value=kw.join(", ");$("kc").textContent=kw.length}
+function setT(i){S.tpl=i;S.style=i%10;S.variant=i/10|0;S.pal=S.variant;S.colors=[...PAL[S.pal][2]];S.text=S.text||STY[S.style][0];clock=0;document.querySelectorAll(".tc").forEach((b,k)=>b.setAttribute("aria-pressed",+b.dataset.i===i));sync()}
+PAL.forEach((p,i)=>$("pre").add(new Option(p[0],i)));
+$("pre").onchange=e=>{S.pal=+e.target.value;S.colors=[...PAL[S.pal][2]];sync()};
+for(let i=0;i<5;i++)$("c"+i).oninput=e=>{S.colors[i]=e.target.value;meta()};
+$("txt").oninput=e=>{S.text=e.target.value;meta()};$("sub").oninput=e=>S.sub=e.target.value;$("spd").oninput=e=>S.speed=+e.target.value;
+$("ori").onchange=resize;$("play").onclick=e=>{playing=!playing;e.target.textContent=playing?"Jeda":"Putar"};
+$("gen").onclick=()=>{const p=$("prompt").value.trim();if(!p)return $("prompt").focus();S.prompt=p;const l=p.toLowerCase();let st=STY.findIndex(s=>new RegExp(s[2]).test(l)),pl=PK.findIndex(k=>new RegExp(k).test(l));
+const h=[...l].reduce((a,c)=>a+c.charCodeAt(0),0);if(st<0)st=h%10;if(pl<0)pl=(h>>1)%10;const t=S.text;S.text=p.split(/\s+/).slice(0,4).join(" ").replace(/^./,c=>c.toUpperCase());setT(pl*10+st)};
+$("newp").onclick=()=>{S.prompt="";S.text="";S.sub="";S.speed=1;$("prompt").value="";setT(0);S.text="Judul baru";sync();$("prompt").focus();window.scrollTo({top:0,behavior:"smooth"})};
+$("theme").onclick=()=>{const d=document.documentElement,dark=getComputedStyle(d).getPropertyValue("--bg").trim()==="#10141f";d.dataset.theme=dark?"light":"dark"};
+$("cp").onclick=async e=>{const s=`${$("mt").value}\n${$("md").value}\n${$("mk").value}`;try{await navigator.clipboard.writeText(s);e.target.textContent="Tersalin"}catch(x){$("mk").select();e.target.textContent="Pilih teks lalu salin manual"}setTimeout(()=>e.target.textContent="Salin metadata",1600)};
+const fname=()=>($("mt").value.toLowerCase().replace(/[^a-z0-9]+/g,"-").slice(0,40)||"video")+"."+$("fmt").value;
+$("csv").onclick=()=>{const q=s=>`"${s.replace(/"/g,'""')}"`;const b=new Blob([`Filename,Description,Keywords,Categories,Editorial\n${q(fname())},${q($("md").value)},${q($("mk").value)},${q("Abstract,Backgrounds/Textures")},no\n`],{type:"text/csv"});dl(b,"shutterstock-metadata.csv")};
+function dl(b,n){const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+$("render").onclick=async()=>{const[a,b]=$("ori").value.split(":").map(Number),sh=+$("res").value;let W=a>=b?Math.round(sh*a/b):sh,H=a>=b?sh:Math.round(sh*b/a);W-=W%2;H-=H%2;
+if(typeof MediaRecorder==="undefined")return $("rnote").textContent="Browser ini belum mendukung perekaman video. Gunakan Chrome atau Edge terbaru.";
+const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");let mime=$("fmt").value==="mp4"?"video/mp4":"video/webm;codecs=vp9";let ext=$("fmt").value;
+if(!MediaRecorder.isTypeSupported(mime)){mime="video/webm";ext="webm";$("rnote").textContent="Format dipilih tidak didukung browser, memakai WebM."}else $("rnote").textContent="Merender "+W+"×"+H+"…";
+const dur=+$("dur").value,ch=[],rec=new MediaRecorder(c.captureStream(30),{mimeType:mime,videoBitsPerSecond:Math.min(40e6,W*H*5)});
+rec.ondataavailable=e=>e.data.size&&ch.push(e.data);rec.onstop=()=>{dl(new Blob(ch,{type:mime}),fname().replace(/\.\w+$/,"")+"."+ext);$("prog").style.width="100%";$("rnote").textContent="Selesai. Video diunduh sebagai "+ext.toUpperCase()+"."};
+$("render").disabled=true;try{await document.fonts.load('800 40px "Bricolage Grotesque"')}catch(x){}rec.start();const t0=performance.now();(function f(){const t=(performance.now()-t0)/1000;draw(g,W,H,t,S);$("prog").style.width=Math.min(100,t/dur*100)+"%";if(t<dur)requestAnimationFrame(f);else{rec.stop();$("render").disabled=false}})()};
+function build(){const gr=$("grid");gr.innerHTML="";STY.forEach((s,i)=>$("fs").add(new Option(s[0],i)));$("fs").insertBefore(new Option("Semua gaya","all"),$("fs").firstChild);$("fs").value="all";
+for(let i=0;i<100;i++){const b=document.createElement("button");b.className="tc";b.dataset.i=i;b.dataset.s=i%10;b.setAttribute("aria-pressed","false");const s=STY[i%10][0],p=PAL[i/10|0][0];b.dataset.n=(s+" "+p).toLowerCase();
+b.innerHTML=`<canvas width="240" height="135"></canvas><b>${s}</b><span>${p} · #${i+1}</span>`;const k=b.firstChild,g=k.getContext("2d");const st={style:i%10,variant:i/10|0,colors:PAL[i/10|0][2],text:"",sub:"",speed:1};
+draw(g,240,135,1.5,st);let raf=0,t0=0;b.onmouseenter=b.onfocus=()=>{t0=performance.now();(function f(){draw(g,240,135,1.5+(performance.now()-t0)/1000,st);raf=requestAnimationFrame(f)})()};
+b.onmouseleave=b.onblur=()=>{cancelAnimationFrame(raf);draw(g,240,135,1.5,st)};b.onclick=()=>{setT(i);window.scrollTo({top:0,behavior:"smooth"})};gr.appendChild(b)}}
+function filt(){const q=$("q").value.toLowerCase(),f=$("fs").value;document.querySelectorAll(".tc").forEach(b=>b.hidden=!(b.dataset.n.includes(q)&&(f==="all"||b.dataset.s===f)))}
+$("q").oninput=filt;$("fs").onchange=filt;
+build();setT(14);resize();requestAnimationFrame(frame);
+</script>
+</body>
+</html>
